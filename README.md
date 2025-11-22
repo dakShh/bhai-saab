@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bhai Saab - AI Assistant
 
-## Getting Started
+## Overview
 
-First, run the development server:
+Hey there! Welcome to the Bhai Saab project — think of it as your chill, friendly AI buddy that’s here to help you get stuff done without the fuss. It’s inspired by Jarvis but with a laid-back vibe, just like me: a sorta clumsy dev figuring things out as we go. This project is all about building a conversational AI assistant that handles your calendar, tasks, emails, and more — while I document all the mess-ups and wins along the way.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features (What Bhai Saab Can Do)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Core Stuff
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+-   **Conversational AI with Streaming Responses:** So it feels like you’re really chatting, not just waiting for long pauses.
+-   **Google Calendar Access:** Check your schedule, upcoming events, and weekly plans.
+-   **Google Tasks & Events:** Keep track of your to-dos without breaking a sweat.
+-   **Email Notifications:** Bhai Saab will even shoot you emails when needed — no spam, promise.
 
-## Learn More
+### Stuff Coming Soon (Someday, Hopefully)
 
-To learn more about Next.js, take a look at the following resources:
+-   **Voice Agent:** Because typing is overrated, right?
+-   **More Tools:** Notion note-taking, PDF chats to analyze documents, finance tracking, habit reminders — all on the wishlist.
+-   **And More:** If you think of neat features, shout out!
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Tech Stack (What’s Under the Hood)
 
-## Deploy on Vercel
+-   **Next.js + React:** For the snappy, responsive UI you deserve.
+-   **Tailwind CSS + shadcn/ui:** Making sure Bhai Saab looks clean and works everywhere.
+-   **Langchain v1:** The brains behind the whole AI conversation magic.
+-   **Supabase:** Storing your chats, preferences, and keeping things secure.
+-   **Google APIs + Email Services:** So Bhai Saab can peek at your calendar and ping your inbox.
+-   **Deployment:** Hosted on Vercel because who wants servers to manage?
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Why This Project?
+
+-   To build something real and useful, even if I screw up along the way.
+-   To keep all my progress out in the open — transparency ftw.
+-   To invite you in: ideas, PRs, feedback — all welcome with open arms.
+-   To blog about every step because nothing feels better than sharing the journey of figuring stuff out.
+
+---
+
+## What’s Next?
+
+Starting simple: Project setup and getting Bhai Saab to chat with you (yes, no fancy streaming just yet). Then we’ll add tools and APIs one by one. I’ll keep you posted here, and if you want to say which feature should go live next — hit me up!
+
+---
+
+## Wanna Join?
+
+Issues, pull requests, fun ideas, or even jokes — all go to the GitHub and blog comments. Let’s make Bhai Saab truly yours too.
+
+---
+
+_Let’s build this together. I’ll handle the code, you handle the coffee. ☕_
