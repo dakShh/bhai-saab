@@ -23,31 +23,47 @@ export default function ChatBox() {
         { role: 'assistant', content: 'Hello! How can I assist you today?' },
     ]);
 
+    // I have added comments here to explain the onSubmit function in detail for better understanding.
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!userInput.trim()) return; // Prevent sending empty messages
+        const userMessage: Message = { role: 'user', content: userInput };
+
+        // Update UI immediately with user message
+        setConversation((prev) => [...prev, userMessage]);
+        setUserInput('');
         setLoading(true);
 
         try {
+            // Send the conversation to the backend API
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    messages: [...conversation, { role: 'user', content: userInput }] as Message[],
+                    messages: [...conversation, userMessage] as Message[],
                 }),
             });
+
+            // Handle response from the backend
             const data = await response.json();
+            const aiMessage: Message = { role: 'assistant', content: data.reply };
+
+            // Update UI with AI response
+            setConversation((prev) => [...prev, aiMessage]);
+        } catch (error) {
+            // Handle errors gracefully
+            console.error('Error during chat request:', error);
             setConversation((prev) => [
                 ...prev,
-                { role: 'user', content: userInput },
-                { role: 'assistant', content: data.reply },
+                { role: 'assistant', content: 'Sorry, something went wrong. Please try again.' },
             ]);
-        } catch (error) {
-            console.error('Error during chat request:', error);
+        } finally {
+            // Reset loading state
+            setLoading(false);
         }
-        setLoading(false);
-        setUserInput('');
     };
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -63,7 +79,7 @@ export default function ChatBox() {
                             key={index}
                             className={cn(
                                 'px-6 py-4 rounded-lg shadow-lg',
-                                msg.role === 'assistant' ? 'bg-neutral-500 text-white' : 'bg-yellow-200'
+                                msg.role === 'assistant' ? 'bg-neutral-500 text-white' : 'bg-yellow-200' // User message styling
                             )}
                         >
                             <div className="max-w-3xl whitespace-pre-wrap">{msg.content}</div>
