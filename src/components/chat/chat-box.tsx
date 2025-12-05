@@ -35,6 +35,10 @@ export default function ChatBox() {
         setUserInput('');
         setLoading(true);
 
+        // Add an empty assistant message that we'll update as chunks arrive
+        const assistantMessageIndex = conversation.length + 1;
+        setConversation((prev) => [...prev, { role: 'assistant', content: '' }]);
+
         try {
             // Send the conversation to the backend API
             const response = await fetch('/api/chat/stream', {
@@ -47,19 +51,60 @@ export default function ChatBox() {
                 }),
             });
 
-            // Handle response from the backend
-            const data = await response.json();
-            const aiMessage: Message = { role: 'assistant', content: data.reply };
+            if (!response.body) throw new Error('No response body');
 
-            // Update UI with AI response
-            setConversation((prev) => [...prev, aiMessage]);
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let accumulatedContent = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                // console.log('{ done, value }');
+                if (done) break;
+
+                // Decode the chunk
+                const chunk = decoder.decode(value);
+                const lines = chunk.split('\n');
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        const data = line.slice(6);
+
+                        if (data === '[DONE]') {
+                            break;
+                        }
+
+                        try {
+                            const parsed = JSON.parse(data);
+                            if (parsed.content) {
+                                accumulatedContent += parsed.content;
+
+                                // Update the assistant message in real-time
+                                setConversation((prev) => {
+                                    const updated = [...prev];
+                                    updated[assistantMessageIndex] = {
+                                        role: 'assistant',
+                                        content: accumulatedContent,
+                                    };
+                                    return updated;
+                                });
+                            }
+                        } catch (error) {
+                            console.error('Error parsing stream data:', error);
+                        }
+                    }
+                }
+            }
         } catch (error) {
             // Handle errors gracefully
             console.error('Error during chat request:', error);
-            setConversation((prev) => [
-                ...prev,
-                { role: 'assistant', content: 'Sorry, something went wrong. Please try again.' },
-            ]);
+            setConversation((prev) => {
+                const updated = [...prev];
+                updated[assistantMessageIndex] = {
+                    role: 'assistant',
+                    content: 'Sorry, something went wrong. Please try again.',
+                };
+                return updated;
+            });
         } finally {
             // Reset loading state
             setLoading(false);
@@ -79,10 +124,20 @@ export default function ChatBox() {
                             key={index}
                             className={cn(
                                 'px-6 py-4 rounded-lg shadow-lg',
-                                msg.role === 'assistant' ? 'bg-neutral-500 text-white' : 'bg-yellow-200' // User message styling
+                                // User message styling
+                                msg.role === 'assistant' ? 'bg-neutral-500 text-white' : 'bg-yellow-200'
                             )}
                         >
-                            <div className="max-w-3xl whitespace-pre-wrap">{msg.content}</div>
+                            {}
+                            <div className="max-w-3xl whitespace-pre-wrap">
+                                {loading && !msg.content ? (
+                                    <div className="flex items-center gap-x-2">
+                                        <Spinner /> Thinking...
+                                    </div>
+                                ) : (
+                                    msg.content
+                                )}
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -98,6 +153,7 @@ export default function ChatBox() {
                     name="userInput"
                     value={userInput}
                     onChange={handleChange}
+                    autoComplete="off"
                 />
                 <Button className="text-white" disabled={loading} type="submit">
                     {loading ? <Spinner /> : <Send />}{' '}
