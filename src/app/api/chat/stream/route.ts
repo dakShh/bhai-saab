@@ -7,6 +7,8 @@ import { SystemMessage } from '@langchain/core/messages';
 // Type imports
 import { Message } from '@/types/chat';
 
+export const runtime = 'edge';
+
 const SYSTEM_PROMPT = new SystemMessage(
     `You are 'Bhai Saab', a helpful AI assistant with a friendly Indian personality. You're efficient, respectful, and occasionally use common Hindi phrases naturally (like "acha", "bilkul", "theek hai").
 
@@ -32,6 +34,10 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: 'Messages array is required' }, { status: 400 });
     }
 
+    const encoder = new TextEncoder();
+    const stream = new TransformStream();
+    const writer = stream.writable.getWriter();
+
     // Initialize the Google Gemini model
     const llm = new ChatGoogleGenerativeAI({
         model: 'gemini-2.0-flash', // Specify the Gemini model
@@ -39,7 +45,35 @@ export async function POST(req: Request) {
         temperature: 0.7, // Adjust temperature for response creativity
     });
 
-    const result = await llm.invoke([SYSTEM_PROMPT, ...messages]);
+    (async () => {
+        try {
+            // Replace `llm.invoke(...)` with `llm.stream(...)`
+            const streamResponse = await llm.stream([SYSTEM_PROMPT, ...messages]);
 
-    return NextResponse.json({ reply: result.content });
+            // Iterate tokens / chunks as they arrive
+            for await (const chunk of streamResponse) {
+                const payload = JSON.stringify({ content: chunk.content });
+
+                // Write as Server-Sent Events: `data: <json>\n\n`
+                await writer.write(encoder.encode(`data: ${payload}\n\n`));
+            }
+
+            // Inform the client that stream finished
+            await writer.write(encoder.encode('data: [DONE]\n\n'));
+        } catch (error) {
+            console.error('Streaming error:', error);
+            const payload = JSON.stringify({ error: 'Stream failed' });
+            await writer.write(encoder.encode(`data: ${payload}\n\n`));
+        } finally {
+            await writer.close();
+        }
+    })();
+
+    return new Response(stream.readable, {
+        headers: {
+            'Content-Type': 'text/event-stream', // Crucial header for SSE
+            'Cache-Control': 'no-cache',
+            Connection: 'keep-alive',
+        },
+    });
 }
