@@ -37,7 +37,7 @@ export default function ChatBox() {
 
         try {
             // Send the conversation to the backend API
-            const response = await fetch('/api/chat', {
+            const response = await fetch('/api/chat/stream', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
