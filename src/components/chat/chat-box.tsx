@@ -59,7 +59,7 @@ export default function ChatBox() {
 
             while (true) {
                 const { done, value } = await reader.read();
-                // console.log('{ done, value }');
+
                 if (done) break;
 
                 // Decode the chunk
