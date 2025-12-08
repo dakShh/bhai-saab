@@ -15,6 +15,7 @@ import { Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
+import ConversationList from './conversation-list';
 
 export default function ChatBox() {
     const [userInput, setUserInput] = useState<string>('');
@@ -118,29 +119,7 @@ export default function ChatBox() {
         <div className="max-w-5xl h-[90vh] mx-auto flex flex-col">
             <div className="text-xl font-bold py-6 ">AI Personal Assistant - Bhai Saab</div>
             <div className=" overflow-y-auto mb-6">
-                <div className="flex flex-col space-y-4">
-                    {conversation.map((msg, index) => (
-                        <div
-                            key={index}
-                            className={cn(
-                                'px-6 py-4 rounded-lg shadow-lg',
-                                // User message styling
-                                msg.role === 'assistant' ? 'bg-neutral-500 text-white' : 'bg-yellow-200'
-                            )}
-                        >
-                            {}
-                            <div className="max-w-3xl whitespace-pre-wrap">
-                                {loading && !msg.content ? (
-                                    <div className="flex items-center gap-x-2">
-                                        <Spinner /> Thinking...
-                                    </div>
-                                ) : (
-                                    msg.content
-                                )}
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                <ConversationList conversation={conversation} loading={loading} />
             </div>
 
             <form
