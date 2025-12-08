@@ -15,23 +15,12 @@ export default function ConversationList({ conversation, loading }: Conversation
                 <div
                     key={index}
                     className={cn(
-                        'px-6 py-4 rounded-lg ',
-                        // User message styling
+                        'px-6 py-4 rounded-lg',
                         msg.role === 'assistant' ? 'border' : 'bg-yellow-200 shadow-lg'
                     )}
                 >
-                    <div className="max-w-3xl ">
-                        {loading && !msg.content ? (
-                            <div className="flex items-center gap-x-2">
-                                <Spinner /> Thinking...
-                            </div>
-                        ) : msg.role === 'assistant' ? (
-                            <Streamdown isAnimating={loading} parseIncompleteMarkdown={true}>
-                                {msg.content}
-                            </Streamdown>
-                        ) : (
-                            <p className="whitespace-pre-wrap">{msg.content}</p>
-                        )}
+                    <div className="max-w-3xl">
+                        <MessageContent message={msg} isStreaming={loading} />
                     </div>
                 </div>
             ))}
@@ -39,6 +28,24 @@ export default function ConversationList({ conversation, loading }: Conversation
     );
 }
 
-function MessageBubble({ message, isStreaming }: { message: String; isStreaming: boolean }) {
-    return;
-}
+const MessageContent = ({ message, isStreaming }: { message: Message; isStreaming: boolean }) => {
+    if (isStreaming && !message.content) {
+        return <LoadingIndicator />;
+    }
+
+    if (message.role === 'assistant') {
+        return (
+            <Streamdown isAnimating={isStreaming} parseIncompleteMarkdown={true}>
+                {message.content}
+            </Streamdown>
+        );
+    }
+
+    return <p className="whitespace-pre-wrap">{message.content}</p>;
+};
+
+const LoadingIndicator = () => (
+    <div className="flex items-center gap-x-2">
+        <Spinner /> Thinking...
+    </div>
+);
