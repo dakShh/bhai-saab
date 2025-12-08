@@ -1,7 +1,12 @@
+// Type import
 import { Message } from '@/types/chat';
-import { Spinner } from '../ui/spinner';
-import { Streamdown } from 'streamdown';
+
+// Utils import
 import { cn } from '@/lib/utils';
+
+// Component import
+import { Streamdown } from 'streamdown';
+import { Spinner } from '../ui/spinner';
 
 interface ConversationListProps {
     conversation: Message[];
