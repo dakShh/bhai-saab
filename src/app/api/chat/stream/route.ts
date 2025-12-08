@@ -40,7 +40,7 @@ export async function POST(req: Request) {
 
     // Initialize the Google Gemini model
     const llm = new ChatGoogleGenerativeAI({
-        model: 'gemini-2.0-flash', // Specify the Gemini model
+        model: 'gemini-2.5-flash', // Specify the Gemini model
         apiKey: process.env.GOOGLE_API_KEY,
         temperature: 0.7, // Adjust temperature for response creativity
     });
