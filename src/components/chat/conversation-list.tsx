@@ -16,19 +16,25 @@ interface ConversationListProps {
 export default function ConversationList({ conversation, loading }: ConversationListProps) {
     return (
         <div className="flex flex-col space-y-4">
-            {conversation.map((msg, index) => (
-                <div
-                    key={index}
-                    className={cn(
-                        'px-6 py-4 rounded-lg',
-                        msg.role === 'assistant' ? 'border' : 'bg-yellow-200 shadow-lg'
-                    )}
-                >
-                    <div className="max-w-3xl">
-                        <MessageContent message={msg} isStreaming={loading} />
+            {conversation.map((msg, index) => {
+                // Only the last message should show as streaming
+                const isLastMessage = index === conversation.length - 1;
+                const isStreaming = loading && isLastMessage;
+
+                return (
+                    <div
+                        key={index}
+                        className={cn(
+                            'px-6 py-4 rounded-lg transition-colors',
+                            msg.role === 'assistant' ? 'border border-gray-200' : 'bg-yellow-200 shadow-lg'
+                        )}
+                    >
+                        <div className="max-w-3xl">
+                            <MessageContent message={msg} isStreaming={isStreaming} />
+                        </div>
                     </div>
-                </div>
-            ))}
+                );
+            })}
         </div>
     );
 }
